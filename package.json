@@ -1,0 +1,19 @@
+{
+    "name": "nodejs-vk-script",
+    "description": "A Node.js package to enable VKScript in SaaS applications",
+    "version": "0.0.1",
+    "main": "./main.js",
+    "author": {
+        "name": "Vitche Research Team",
+        "email": "developer@vitche.com"
+    },
+    "keywords": [],
+    "licenses": {
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/vitche/nodejs-vk-script.git"
+    },
+    "dependencies": {
+    }
+}
