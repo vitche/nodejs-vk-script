@@ -1,5 +1,6 @@
 var vk = require('nodejs-vk-api');
 var compiler = require('./compiler.js');
+var processor = require('./processor.js');
 var settings = require('./settings.js');
 settings = settings.data;
 function testAuthenticate() {
@@ -29,5 +30,14 @@ function testCompile() {
     });
     console.log(code);
 }
+function testProcess() {
+    var client = processor.create(settings);
+    var result = client.process(function() {
+        var items = API.newsfeed.get({}).items;
+        return items;
+    });
+    console.log(result);
+}
 // testAuthenticate();
 // testCompile();
+// testProcess();
