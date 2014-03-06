@@ -1,5 +1,6 @@
 var vk = require('nodejs-vk-api');
 var settings = require('./settings.js');
+settings = settings.data;
 vk = new vk({
     appID: settings.applicationIdentifier,
     appSecret: settings.applicationSecret,
