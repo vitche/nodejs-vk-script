@@ -1,10 +1,11 @@
 var vk = require('nodejs-vk-api');
+var settings = require('./settings.js');
 vk = new vk({
-    appID: '{ApplicationIdentifier}',
-    appSecret: '{ApplicationSecret}',
+    appID: settings.applicationIdentifier,
+    appSecret: settings.applicationSecret,
     mode: 'oauth',
-    username: '{UserName}',
-    password: '{Password}'
+    username: settings.userName,
+    password: settings.password
 });
 vk.on('acquireTokenReady', function() {
     console.log('VKontakte.Api.acquireTokenReady: ' + vk.getToken());
