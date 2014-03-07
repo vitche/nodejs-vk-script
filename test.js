@@ -4,24 +4,24 @@ var processor = require('./processor.js');
 var settings = require('./settings.js');
 settings = settings.data;
 function testAuthenticate() {
-    vk = new vk({
+    var client = new vk({
         appID: settings.applicationIdentifier,
         appSecret: settings.applicationSecret,
         mode: 'oauth',
         username: settings.userName,
         password: settings.password
     });
-    vk.on('acquireTokenReady', function() {
+    client.on('acquireTokenReady', function() {
         console.log('VKontakte.Api.acquireTokenReady: ' + vk.getToken());
-        vk.request('newsfeed.get', {}, 'newsfeed.get');
+        client.request('newsfeed.get', {}, 'newsfeed.get');
     });
-    vk.on('acquireTokenNotReady', function() {
+    client.on('acquireTokenNotReady', function() {
         console.log('VKontakte.Api.acquireTokenNotReady');
     });
-    vk.on('newsfeed.get', function(result) {
+    client.on('newsfeed.get', function(result) {
         console.log(result);
     });
-    vk.acquireToken();
+    client.acquireToken();
 }
 function testCompile() {
     var code = compiler.compile(function() {
@@ -35,9 +35,11 @@ function testProcess() {
     var result = client.process(function() {
         var items = API.newsfeed.get({}).items;
         return items;
+    }, function(result) {
+        console.log(result);
     });
     console.log(result);
 }
 // testAuthenticate();
 // testCompile();
-// testProcess();
+testProcess();

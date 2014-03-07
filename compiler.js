@@ -3,5 +3,6 @@ exports.compile = function(block) {
     result = result.replace(/^(function[ ]*\([ ]*\)[ ]*{[\n]*)/g, '');
     result = result.replace(/([\n]*[ ]*}[ ]*$[\n]*)/g, '');
     result = result.replace(/(^[ ]*|[\n]+[ ]*)/g, '');
+    result = result.replace(/( )/g, '%20');
     return result;
 };
