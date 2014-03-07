@@ -32,13 +32,18 @@ function testCompile() {
 }
 function testProcess() {
     var client = processor.create(settings);
-    var result = client.process(function() {
+    client.process(function() {
+        var i = 0;
         var items = API.newsfeed.get({}).items;
+        var length = items.length;
+        while (i < length) {
+            i = i + 1;
+            var item = items[i];
+        }
         return items;
     }, function(result) {
         console.log(result);
     });
-    console.log(result);
 }
 // testAuthenticate();
 // testCompile();
