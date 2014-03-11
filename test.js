@@ -33,14 +33,13 @@ function testCompile() {
 function testProcess() {
     var client = processor.create(settings);
     client.process(function() {
-        var i = 0;
-        var items = API.newsfeed.get({}).items;
-        var length = items.length;
-        while (i < length) {
-            i = i + 1;
-            var item = items[i];
-        }
-        return items;
+        var newsResponse = API.newsfeed.get({});
+        var news = newsResponse.items;
+        var users = API.users.get({
+            fields: "uid,first_name,last_name,nickname,photo_50,photo_100,photo_200_orig,photo_max_orig,online,contacts,city,country,has_mobile",
+            uids: newsResponse.profiles.projection.uid
+        });
+        return {items: news, profiles: users};
     }, function(result) {
         console.log(result);
     });

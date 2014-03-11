@@ -5,5 +5,8 @@ exports.compile = function(block) {
     result = result.replace(/(^[ ]*|[\n]+[ ]*)/g, '');
     result = result.replace(/ /g, '%20');
     result = result.replace(/\+/g, '%2B');
+    // Compile the VKScript entity projection operator from something
+    // closer to JavaScript
+    result = result.replace(/.projection./g, '@.');
     return result;
 };
