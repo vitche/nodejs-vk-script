@@ -33,26 +33,51 @@ function testCompile() {
 function testProcess() {
     var client = processor.create(settings);
     client.process(function() {
-        var newsResponse = API.newsfeed.get({});
+        var newsResponse = API.newsfeed.get({
+            offset: 0,
+            count: 20
+        });
         var news = newsResponse.items;
         var users = API.users.get({
             fields: "uid,first_name,last_name,nickname,photo_50,photo_100,photo_200_orig,photo_max_orig,online,contacts,city,country,has_mobile",
             uids: newsResponse.profiles.projection.uid
         });
         var i = 0;
-        var wallMessages = [];
+        var postIdentifiers = [];
         while (i < news.length) {
-            i = i + 1;
             var newsItem = news[i];
             if ("post" === (newsItem.type + "")) {
                 var sourceIdentifier = newsItem.source_id;
                 if (sourceIdentifier < 0) {
                     sourceIdentifier = 0 - sourceIdentifier;
                 }
-                wallMessages = wallMessages + [sourceIdentifier + "_" + newsItem.post_id];
+                postIdentifiers = postIdentifiers + [sourceIdentifier + "_" + newsItem.post_id];
             }
+            i = i + 1;
         }
-        return {items: news, profiles: users, wallMessages: wallMessages};
+        var wallMessages = API.wall.getById({
+            posts: postIdentifiers,
+            extended: 1
+        });
+        wallMessages = wallMessages.wall;
+        i = 0;
+        var likes = [];
+        while (i < news.length) {
+            var newsItem = news[i];
+            if ("post" === (newsItem.type + "")) {
+                var sourceIdentifier = newsItem.source_id;
+                if (sourceIdentifier < 0) {
+                    sourceIdentifier = 0 - sourceIdentifier;
+                }
+                likes = likes + API.likes.getList({
+                    type: "post",
+                    item_id: newsItem.post_id,
+                    owner_id: sourceIdentifier
+                });
+            }
+            i = i + 1;
+        }
+        return {items: news, profiles: users, wallMessages: wallMessages, likes: likes};
     }, function(result) {
         console.log(result);
     });
