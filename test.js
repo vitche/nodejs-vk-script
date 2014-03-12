@@ -45,7 +45,11 @@ function testProcess() {
             i = i + 1;
             var newsItem = news[i];
             if ("post" === (newsItem.type + "")) {
-                wallMessages = wallMessages + [newsItem];
+                var sourceIdentifier = newsItem.source_id;
+                if (sourceIdentifier < 0) {
+                    sourceIdentifier = 0 - sourceIdentifier;
+                }
+                wallMessages = wallMessages + [sourceIdentifier + "_" + newsItem.post_id];
             }
         }
         return {items: news, profiles: users, wallMessages: wallMessages};
