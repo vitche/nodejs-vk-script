@@ -39,7 +39,16 @@ function testProcess() {
             fields: "uid,first_name,last_name,nickname,photo_50,photo_100,photo_200_orig,photo_max_orig,online,contacts,city,country,has_mobile",
             uids: newsResponse.profiles.projection.uid
         });
-        return {items: news, profiles: users};
+        var i = 0;
+        var wallMessages = [];
+        while (i < news.length) {
+            i = i + 1;
+            var newsItem = news[i];
+            if ("post" === (newsItem.type + "")) {
+                wallMessages = wallMessages + [newsItem];
+            }
+        }
+        return {items: news, profiles: users, wallMessages: wallMessages};
     }, function(result) {
         console.log(result);
     });

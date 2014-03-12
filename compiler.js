@@ -8,5 +8,7 @@ exports.compile = function(block) {
     // Compile the VKScript entity projection operator from something
     // closer to JavaScript
     result = result.replace(/.projection./g, '@.');
+    // Replace strict comparison to weak comparison
+    result = result.replace(/===/g, '==');
     return result;
 };
