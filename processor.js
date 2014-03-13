@@ -1,5 +1,6 @@
 var vk = require('nodejs-vk-api');
 var compiler = require('./compiler.js');
+var compressor = require('./compressor.js');
 exports.create = function(settings) {
     return {
         client: function() {
@@ -21,7 +22,7 @@ exports.create = function(settings) {
             client.acquireToken();
             return client;
         }(),
-        process: function(block, callback) {
+        process: function(block, callback, tokenReplacements) {
             var self = this;
             var interval = setInterval(function() {
                 if (self.ready()) {
@@ -30,6 +31,7 @@ exports.create = function(settings) {
                     clearInterval(interval);
                     // Compile the code block to VKScript
                     var code = compiler.compile(block);
+                    code = compressor.compressReplacements(tokenReplacements, code);
                     self.client.on('execute', function(result) {
                         if (undefined !== callback) {
                             callback(result);

@@ -37,15 +37,15 @@ function testProcess() {
             offset: 0,
             count: 20
         });
-        var news = newsResponse.items;
-        var users = API.users.get({
+        var resultingNews = newsResponse.items;
+        var resultingUsers = API.users.get({
             fields: "uid,first_name,last_name,nickname,photo_50,photo_100,photo_200_orig,photo_max_orig,online,contacts,city,country,has_mobile",
             uids: newsResponse.profiles.projection.uid
         });
         var i = 0;
         var postIdentifiers = [];
-        while (i < news.length) {
-            var newsItem = news[i];
+        while (i < resultingNews.length) {
+            var newsItem = resultingNews[i];
             if ("post" === (newsItem.type + "")) {
                 var sourceIdentifier = newsItem.source_id;
                 if (sourceIdentifier < 0) {
@@ -55,21 +55,21 @@ function testProcess() {
             }
             i = i + 1;
         }
-        var wallMessages = API.wall.getById({
+        var resultingWallMessages = API.wall.getById({
             posts: postIdentifiers,
             extended: 1
         });
-        wallMessages = wallMessages.wall;
+        resultingWallMessages = resultingWallMessages.wall;
         i = 0;
-        var likes = [];
-        while (i < news.length) {
-            var newsItem = news[i];
+        var resultingLikes = [];
+        while (i < resultingNews.length) {
+            var newsItem = resultingNews[i];
             if ("post" === (newsItem.type + "")) {
                 var sourceIdentifier = newsItem.source_id;
                 if (sourceIdentifier < 0) {
                     sourceIdentifier = 0 - sourceIdentifier;
                 }
-                likes = likes + API.likes.getList({
+                resultingLikes = resultingLikes + API.likes.getList({
                     type: "post",
                     item_id: newsItem.post_id,
                     owner_id: sourceIdentifier
@@ -77,10 +77,48 @@ function testProcess() {
             }
             i = i + 1;
         }
-        return {items: news, profiles: users, wallMessages: wallMessages, likes: likes};
+        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes};
     }, function(result) {
         console.log(result);
-    });
+    }, [[
+            'newsResponse',
+            'postIdentifiers',
+            'newsItem',
+            'sourceIdentifier',
+            'resultingWallMessages',
+            'resultingLikes',
+            'resultingNews',
+            'resultingUsers',
+            '%20=%20',
+            '%20==%20',
+            '%20{',
+            ':%20',
+            'while%20',
+            'if%20',
+            '%20<%20',
+            '%20-%20',
+            ',%20',
+            '%20%2B%20'
+        ], [
+            'a',
+            'b',
+            'c',
+            'd',
+            'e',
+            'f',
+            'g',
+            'h',
+            '=',
+            '==',
+            '{',
+            ':',
+            'while',
+            'if',
+            '<',
+            '-',
+            ',',
+            '%2B'
+        ]]);
 }
 // testAuthenticate();
 // testCompile();
