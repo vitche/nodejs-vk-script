@@ -32,6 +32,7 @@ exports.create = function(settings) {
                     // Compile the code block to VKScript
                     var code = compiler.compile(block);
                     code = compressor.compressReplacements(tokenReplacements, code);
+                    // console.log(compiler.compileCString(code));
                     self.client.on('execute', function(result) {
                         if (undefined !== callback) {
                             callback(result);

@@ -12,3 +12,9 @@ exports.compile = function(block) {
     result = result.replace(/===/g, '==');
     return result;
 };
+exports.compileCString = function(code) {
+    var result = code;
+    result = result.replace(/\\/g, '\\\\');
+    result = result.replace(/"/g, '\\"');
+    return result;
+}
