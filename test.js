@@ -69,11 +69,11 @@ function testProcess() {
                 if (sourceIdentifier < 0) {
                     sourceIdentifier = 0 - sourceIdentifier;
                 }
-                resultingLikes = resultingLikes + API.likes.getList({
-                    type: "post",
-                    item_id: newsItem.post_id,
-                    owner_id: sourceIdentifier
-                });
+                resultingLikes = resultingLikes + [API.likes.getList({
+                        type: "post",
+                        item_id: newsItem.post_id,
+                        owner_id: sourceIdentifier
+                    })];
             }
             i = i + 1;
         }
