@@ -74,6 +74,8 @@ function testProcess() {
                         item_id: newsItem.post_id,
                         owner_id: sourceIdentifier
                     })];
+            } else {
+                resultingLikes = resultingLikes + [{}];
             }
             i = i + 1;
         }
