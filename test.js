@@ -38,12 +38,9 @@ function testProcess() {
             count: 20
         });
         var resultingNews = newsResponse.items;
-        var resultingUsers = API.users.get({
-            fields: "uid,first_name,last_name,nickname,photo_50,photo_100,photo_200_orig,photo_max_orig,online,contacts,city,country,has_mobile",
-            uids: newsResponse.profiles.projection.uid
-        });
-        var i = 0;
         var postIdentifiers = [];
+        var friendIdentifiers = [];
+        var i = 0;
         while (i < resultingNews.length) {
             var newsItem = resultingNews[i];
             if ("post" === (newsItem.type + "")) {
@@ -53,8 +50,20 @@ function testProcess() {
                 }
                 postIdentifiers = postIdentifiers + [sourceIdentifier + "_" + newsItem.post_id];
             }
+            if ("friend" === (newsItem.type + "")) {
+                var k = 0;
+                var friendUsers = newsItem.friends;
+                while (k < friendUsers.length) {
+                    friendIdentifiers = friendIdentifiers + [friendUsers[k].uid];
+                    k = k + 1;
+                }
+            }
             i = i + 1;
         }
+        var resultingUsers = API.users.get({
+            fields: "uid,first_name,last_name,nickname,photo_50,photo_100,photo_200_orig,photo_max_orig,online,contacts,city,country,has_mobile",
+            uids: newsResponse.profiles.projection.uid + friendIdentifiers
+        });
         var resultingWallMessages = API.wall.getById({
             posts: postIdentifiers,
             extended: 1
@@ -91,6 +100,8 @@ function testProcess() {
             'resultingLikes',
             'resultingNews',
             'resultingUsers',
+            'friendIdentifiers',
+            'friendUsers',
             '%20=%20',
             '%20==%20',
             '%20{',
@@ -110,6 +121,8 @@ function testProcess() {
             'f',
             'g',
             'h',
+            'j',
+            'o',
             '=',
             '==',
             '{',
