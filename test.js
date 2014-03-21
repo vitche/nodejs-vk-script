@@ -32,7 +32,7 @@ function testCompile() {
 }
 function testProcess() {
     var client = processor.create(settings);
-    client.process(function() {
+    var script = function() {
         var newsResponse = API.newsfeed.get({
             offset: 0,
             count: 20
@@ -88,10 +88,9 @@ function testProcess() {
             }
             i = i + 1;
         }
-        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes};
-    }, function(result) {
-        console.log(result);
-    }, [[
+        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes, from: newsResponse.new_from};
+    };
+    var tokenReplacements = [[
             'newsResponse',
             'postIdentifiers',
             'newsItem',
@@ -133,7 +132,13 @@ function testProcess() {
             '-',
             ',',
             '%2B'
-        ]]);
+        ]];
+    client.process(script, function(result) {
+        console.log(result);
+        // result.response.items.forEach(function(newsItem) {
+        //     console.log(newsItem.source_id + '_' + newsItem.post_id);
+        // });
+    }, tokenReplacements);
 }
 // testAuthenticate();
 // testCompile();
