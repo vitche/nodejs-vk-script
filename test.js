@@ -40,6 +40,7 @@ function testProcess() {
         var resultingLikes = [];
         var resultingNews = newsResponse.items;
         var postIdentifiers = [];
+        var groupIdentifiers = [];
         var friendIdentifiers = [];
         var i = 0;
         while (i < resultingNews.length) {
@@ -48,7 +49,9 @@ function testProcess() {
             if ("post" === (newsItem.type + "")) {
                 var sourceIdentifier = newsItem.source_id;
                 if (sourceIdentifier < 0) {
-                    sourceIdentifier = 0 - sourceIdentifier;
+                    var groupIdentifier = 0 - sourceIdentifier;
+                    groupIdentifiers = groupIdentifiers + [groupIdentifier];
+                    sourceIdentifier = groupIdentifier;
                 }
                 postIdentifiers = postIdentifiers + [sourceIdentifier + "_" + newsItem.post_id];
                 resultingLikes = resultingLikes + [API.likes.getList({
@@ -79,7 +82,10 @@ function testProcess() {
             extended: 1
         });
         resultingWallMessages = resultingWallMessages.wall;
-        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes, from: newsResponse.new_from, groups: []};
+        var resultingGroups = API.groups.getById({
+            gids: groupIdentifiers
+        });
+        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes, from: newsResponse.new_from, groups: resultingGroups};
     };
     var tokenReplacements = [[
             'newsResponse',
@@ -93,6 +99,8 @@ function testProcess() {
             'friendIdentifiers',
             'friendUsers',
             'loadedLike',
+            'groupIdentifier',
+            'resultingGroups',
             '%20=%20',
             '%20==%20',
             '%20{',
@@ -115,6 +123,8 @@ function testProcess() {
             'j',
             'o',
             'p',
+            'q',
+            'r',
             '=',
             '==',
             '{',
@@ -128,6 +138,7 @@ function testProcess() {
         ]];
     client.process(script, function(result) {
         console.log(JSON.stringify(result));
+        // console.log(result);
         // result.response.items.forEach(function(newsItem) {
         //     console.log(newsItem.source_id + '_' + newsItem.post_id);
         // });
