@@ -37,26 +37,36 @@ function testProcess() {
             offset: 0,
             count: 20
         });
+        var resultingLikes = [];
         var resultingNews = newsResponse.items;
         var postIdentifiers = [];
         var friendIdentifiers = [];
         var i = 0;
         while (i < resultingNews.length) {
             var newsItem = resultingNews[i];
+            var loadedLike = false;
             if ("post" === (newsItem.type + "")) {
                 var sourceIdentifier = newsItem.source_id;
                 if (sourceIdentifier < 0) {
                     sourceIdentifier = 0 - sourceIdentifier;
                 }
                 postIdentifiers = postIdentifiers + [sourceIdentifier + "_" + newsItem.post_id];
-            }
-            if ("friend" === (newsItem.type + "")) {
+                resultingLikes = resultingLikes + [API.likes.getList({
+                        type: "post",
+                        item_id: newsItem.post_id,
+                        owner_id: sourceIdentifier
+                    })];
+                loadedLike = true;
+            } else if ("friend" === (newsItem.type + "")) {
                 var k = 0;
                 var friendUsers = newsItem.friends;
                 while (k < friendUsers.length) {
                     friendIdentifiers = friendIdentifiers + [friendUsers[k].uid];
                     k = k + 1;
                 }
+            }
+            if (!loadedLike) {
+                resultingLikes = resultingLikes + [{}];
             }
             i = i + 1;
         }
@@ -69,26 +79,7 @@ function testProcess() {
             extended: 1
         });
         resultingWallMessages = resultingWallMessages.wall;
-        i = 0;
-        var resultingLikes = [];
-        while (i < resultingNews.length) {
-            var newsItem = resultingNews[i];
-            if ("post" === (newsItem.type + "")) {
-                var sourceIdentifier = newsItem.source_id;
-                if (sourceIdentifier < 0) {
-                    sourceIdentifier = 0 - sourceIdentifier;
-                }
-                resultingLikes = resultingLikes + [API.likes.getList({
-                        type: "post",
-                        item_id: newsItem.post_id,
-                        owner_id: sourceIdentifier
-                    })];
-            } else {
-                resultingLikes = resultingLikes + [{}];
-            }
-            i = i + 1;
-        }
-        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes, from: newsResponse.new_from};
+        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes, from: newsResponse.new_from, groups: []};
     };
     var tokenReplacements = [[
             'newsResponse',
@@ -101,6 +92,7 @@ function testProcess() {
             'resultingUsers',
             'friendIdentifiers',
             'friendUsers',
+            'loadedLike',
             '%20=%20',
             '%20==%20',
             '%20{',
@@ -122,6 +114,7 @@ function testProcess() {
             'h',
             'j',
             'o',
+            'p',
             '=',
             '==',
             '{',
@@ -134,7 +127,7 @@ function testProcess() {
             '%2B'
         ]];
     client.process(script, function(result) {
-        console.log(result);
+        console.log(JSON.stringify(result));
         // result.response.items.forEach(function(newsItem) {
         //     console.log(newsItem.source_id + '_' + newsItem.post_id);
         // });
