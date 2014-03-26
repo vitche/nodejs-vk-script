@@ -1,5 +1,5 @@
 {
-    "name": "nodejs-vk-script",
+    "name": "vk-script",
     "description": "A Node.js package to enable VKScript in SaaS applications",
     "version": "0.0.1",
     "main": "./compiler.js",
