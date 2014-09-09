@@ -1,30 +1,28 @@
-var vk = require('nodejs-vk-api');
+var vk = require('vksdk');
 var compiler = require('./compiler.js');
 var compressor = require('./compressor.js');
-exports.create = function(settings) {
+exports.create = function (settings) {
     return {
-        client: function() {
+        client: function () {
             var client = new vk({
                 appID: settings.applicationIdentifier,
                 appSecret: settings.applicationSecret,
-                mode: 'oauth',
-                username: settings.userName,
-                password: settings.password
+                mode: 'oauth'
             });
-            client.on('acquireTokenReady', function() {
+            client.on('acquireTokenReady', function () {
                 console.log('VKontakte.Api.acquireTokenReady: ' + client.getToken());
                 client.ready = true;
             });
-            client.on('acquireTokenNotReady', function() {
+            client.on('acquireTokenNotReady', function () {
                 console.log('VKontakte.Api.acquireTokenNotReady');
                 client.ready = false;
             });
-            client.acquireToken();
+            client.acquireToken(settings.userName, settings.password);
             return client;
         }(),
-        process: function(block, callback, tokenReplacements) {
+        process: function (block, callback, tokenReplacements) {
             var self = this;
-            var interval = setInterval(function() {
+            var interval = setInterval(function () {
                 if (self.ready()) {
                     // Release interval as soon as possible to avoid doubled
                     // execution
@@ -33,7 +31,7 @@ exports.create = function(settings) {
                     var code = compiler.compile(block);
                     code = compressor.compressReplacements(tokenReplacements, code);
                     // console.log(compiler.compileCString(code));
-                    self.client.on('execute', function(result) {
+                    self.client.on('execute', function (result) {
                         if (undefined !== callback) {
                             callback(result);
                         }
@@ -44,7 +42,7 @@ exports.create = function(settings) {
                 }
             }, 100);
         },
-        ready: function() {
+        ready: function () {
             if (undefined !== this.client && undefined !== this.client.ready) {
                 return this.client.ready;
             }

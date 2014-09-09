@@ -1,4 +1,4 @@
-var vk = require('nodejs-vk-api');
+var vk = require('vksdk');
 var compiler = require('./compiler.js');
 var processor = require('./processor.js');
 var settings = require('./settings.js');
