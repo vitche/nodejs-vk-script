@@ -2,7 +2,7 @@
     "name": "vk-script",
     "description": "A Node.js package to enable VKScript in SaaS applications",
     "version": "0.0.1",
-    "main": "./test.js",
+    "main": "./processor.js",
     "author": {
         "name": "Vitche Research Team",
         "email": "developer@vitche.com"
