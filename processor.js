@@ -27,6 +27,7 @@ exports.create = function (settings) {
                 client.setToken({
                     token: settings.accessToken
                 });
+                client.ready = true;
                 return client;
             } else {
                 return null;
