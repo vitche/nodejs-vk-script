@@ -57,6 +57,27 @@ exports.create = function (settings) {
                 }
             }, 100);
         },
+        // Whether there was an error in the given response
+        checkErrorResponse: function (response) {
+            if (undefined != response.error) {
+                return true;
+            }
+            return false;
+        },
+        // Try to process error response depending on the error code
+        processErrorResponse: function (response, callback) {
+            var error = response.error;
+            var errorParameter = {};
+            errorParameter.type = error.error_code;
+            if (14 == error.error_code) {
+                // Server has sygnaled that CAPTCHA is needed
+                errorParameter.id = error.captcha_sid;
+                errorParameter.uri = error.captcha_img;
+            } else if (5 == response.error()) {
+                // Server has sygnaled of an invalid session
+            }
+            callback(errorParameter);
+        },
         ready: function () {
             if (undefined !== this.client && undefined !== this.client.ready) {
                 return this.client.ready;
