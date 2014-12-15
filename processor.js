@@ -70,11 +70,11 @@ exports.create = function (settings) {
             var errorParameter = {};
             errorParameter.type = error.error_code;
             if (14 == error.error_code) {
-                // Server has sygnaled that CAPTCHA is needed
+                // Server has signaled that CAPTCHA is needed
                 errorParameter.id = error.captcha_sid;
                 errorParameter.uri = error.captcha_img;
-            } else if (5 == response.error()) {
-                // Server has sygnaled of an invalid session
+            } else if (5 == response.error_code) {
+                // Server has signaled of an invalid session
             }
             callback(errorParameter);
         },
