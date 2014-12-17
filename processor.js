@@ -1,4 +1,4 @@
-var vk = require('vksdk');
+var vk = require('./patches/vksdk.js');
 var compiler = require('./compiler.js');
 var compressor = require('./compressor.js');
 exports.create = function (settings) {

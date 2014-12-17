@@ -15,6 +15,7 @@
         "url": "git://github.com/vitche/nodejs-vk-script.git"
     },
     "dependencies": {
-        "nodejs-vksdk": "git+https://github.com/57uff3r/nodejs-vksdk"
+        "nodejs-vksdk": "git+https://github.com/57uff3r/nodejs-vksdk",
+        "patch": "git+https://github.com/vitche/nodejs-patch"
     }
 }
