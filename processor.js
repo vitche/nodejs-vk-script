@@ -33,7 +33,7 @@ exports.create = function (settings) {
                 return null;
             }
         }(),
-        process: function (block, callback, tokenReplacements) {
+        process: function (block, callback, tokenReplacements, captcha) {
             var self = this;
             var interval = setInterval(function () {
                 if (self.ready()) {
@@ -51,9 +51,14 @@ exports.create = function (settings) {
                             callback(result);
                         }
                     });
-                    self.client.request('execute', {
+                    var arguments = {
                         code: code
-                    }, 'execute');
+                    };
+                    if (undefined != captcha) {
+                        arguments.captcha_sid = captcha.id;
+                        arguments.captcha_key = captcha.text;
+                    }
+                    self.client.request('execute', arguments, 'execute');
                 }
             }, 100);
         },
