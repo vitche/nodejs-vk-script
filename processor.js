@@ -22,8 +22,8 @@ exports.create = function (settings) {
                 return client;
             } else if (undefined != settings.accessToken) {
                 var client = new vk({
-                    appID: undefined,
-                    appSecret: undefined,
+                    appID: null,
+                    appSecret: null,
                     mode: 'oauth'
                 });
                 client.setToken({
