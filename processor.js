@@ -6,7 +6,7 @@ exports.create = function (settings) {
         client: function () {
             if (undefined != settings.password) {
                 var client = new vk({
-                    appID: settings.applicationIdentifier,
+                    appId: settings.applicationIdentifier,
                     appSecret: settings.applicationSecret,
                     mode: 'oauth'
                 });
@@ -22,7 +22,7 @@ exports.create = function (settings) {
                 return client;
             } else if (undefined != settings.accessToken) {
                 var client = new vk({
-                    appID: null,
+                    appId: null,
                     appSecret: null,
                     mode: 'oauth'
                 });
