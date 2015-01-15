@@ -8,27 +8,24 @@ exports.create = function (settings) {
                 var client = new vk({
                     appId: settings.applicationIdentifier,
                     appSecret: settings.applicationSecret,
-                    mode: 'oauth'
+                    mode: 'oauth',
+                    secure: true
                 });
-                client.on('acquireTokenReady', function () {
-                    console.log('VKontakte.Api.acquireTokenReady: ' + client.getToken());
+                client.on('serverTokenReady', function (token) {
+                    client.setToken(token.access_token);
+                    console.log('VKontakte.Api.serverTokenReady: ' + client.getToken());
                     client.ready = true;
                 });
-                client.on('acquireTokenNotReady', function () {
-                    console.log('VKontakte.Api.acquireTokenNotReady');
-                    client.ready = false;
-                });
-                client.acquireToken(settings.userName, settings.password);
+                client.requestServerToken(settings.userName, settings.password);
                 return client;
             } else if (undefined != settings.accessToken) {
                 var client = new vk({
                     appId: null,
                     appSecret: null,
-                    mode: 'oauth'
+                    mode: 'oauth',
+                    secure: true
                 });
-                client.setToken({
-                    token: settings.accessToken
-                });
+                client.setToken(settings.accessToken);
                 client.ready = true;
                 return client;
             } else {

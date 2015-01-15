@@ -1,41 +1,38 @@
-var vk = require('vksdk');
+var vk = require('./patches/vksdk');
 var compiler = require('./compiler.js');
 var processor = require('./processor.js');
 var settings = require('./settings.js');
 settings = settings.data;
 function testAuthenticate() {
     var client = new vk({
-        appID: settings.applicationIdentifier,
+        appId: settings.applicationIdentifier,
         appSecret: settings.applicationSecret,
         mode: 'oauth',
-        username: settings.userName,
-        password: settings.password
+        secure: true
     });
-    client.on('acquireTokenReady', function() {
-        console.log('VKontakte.Api.acquireTokenReady: ' + vk.getToken());
+    client.on('serverTokenReady', function (token) {
+        client.setToken(token.access_token)
+        console.log('VKontakte.Api.serverTokenReady: ' + client.getToken());
         client.request('newsfeed.get', {}, 'newsfeed.get');
     });
-    client.on('acquireTokenNotReady', function() {
-        console.log('VKontakte.Api.acquireTokenNotReady');
-    });
-    client.on('newsfeed.get', function(result) {
+    client.on('newsfeed.get', function (result) {
         console.log(result);
     });
-    client.acquireToken();
+    client.requestServerToken(settings.userName, settings.password);
 }
 function testCompile() {
-    var code = compiler.compile(function() {
+    var code = compiler.compile(function () {
         var items = API.newsfeed.get({}).items;
         return items;
     });
     console.log(code);
 }
-function testProcess() {
+function testNews() {
     var client = processor.create(settings);
-    var script = function() {
+    var script = function () {
         var newsResponse = API.newsfeed.get({
-            offset: 0,
-            count: 20
+            start_from: 0,
+            count: 5
         });
         var resultingLikes = [];
         var resultingNews = newsResponse.items;
@@ -43,7 +40,7 @@ function testProcess() {
         var groupIdentifiers = [];
         var friendIdentifiers = [];
         var i = 0;
-        while (i < resultingNews.length) {
+        while (i < resultingNews.length + 0) {
             var newsItem = resultingNews[i];
             var loadedLike = false;
             if ("post" === (newsItem.type + "")) {
@@ -55,10 +52,10 @@ function testProcess() {
                 }
                 postIdentifiers = postIdentifiers + [sourceIdentifier + "_" + newsItem.post_id];
                 resultingLikes = resultingLikes + [API.likes.getList({
-                        type: "post",
-                        item_id: newsItem.post_id,
-                        owner_id: sourceIdentifier
-                    })];
+                    type: "post",
+                    item_id: newsItem.post_id,
+                    owner_id: sourceIdentifier
+                })];
                 loadedLike = true;
             } else if ("friend" === (newsItem.type + "")) {
                 var k = 0;
@@ -83,67 +80,80 @@ function testProcess() {
         });
         resultingWallMessages = resultingWallMessages.wall;
         var resultingGroups = API.groups.getById({
-            gids: groupIdentifiers
+            group_ids: groupIdentifiers
         });
-        return {items: resultingNews, profiles: resultingUsers, wallMessages: resultingWallMessages, likes: resultingLikes, from: newsResponse.new_from, groups: resultingGroups};
+        return {
+            items: resultingNews,
+            profiles: resultingUsers,
+            wallMessages: resultingWallMessages,
+            likes: resultingLikes,
+            from: newsResponse.next_from,
+            groups: resultingGroups
+        };
     };
     var tokenReplacements = [[
-            'newsResponse',
-            'postIdentifiers',
-            'newsItem',
-            'sourceIdentifier',
-            'resultingWallMessages',
-            'resultingLikes',
-            'resultingNews',
-            'resultingUsers',
-            'friendIdentifiers',
-            'friendUsers',
-            'loadedLike',
-            'groupIdentifier',
-            'resultingGroups',
-            '%20=%20',
-            '%20==%20',
-            '%20{',
-            ':%20',
-            'while%20',
-            'if%20',
-            '%20<%20',
-            '%20-%20',
-            ',%20',
-            '%20%2B%20'
-        ], [
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f',
-            'g',
-            'h',
-            'j',
-            'o',
-            'p',
-            'q',
-            'r',
-            '=',
-            '==',
-            '{',
-            ':',
-            'while',
-            'if',
-            '<',
-            '-',
-            ',',
-            '%2B'
-        ]];
-    client.process(script, function(result) {
-        console.log(JSON.stringify(result));
-        // console.log(result);
-        // result.response.items.forEach(function(newsItem) {
-        //     console.log(newsItem.source_id + '_' + newsItem.post_id);
-        // });
+        'newsResponse',
+        'postIdentifiers',
+        'newsItem',
+        'sourceIdentifier',
+        'resultingWallMessages',
+        'resultingLikes',
+        'resultingNews',
+        'resultingUsers',
+        'friendIdentifiers',
+        'friendUsers',
+        'loadedLike',
+        'groupIdentifier',
+        'resultingGroups',
+        '%20=%20',
+        '%20==%20',
+        '%20{',
+        ':%20',
+        'while%20',
+        'if%20',
+        '%20<%20',
+        '%20-%20',
+        ',%20',
+        '%20%2B%20'
+    ], [
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'j',
+        'o',
+        'p',
+        'q',
+        'r',
+        '=',
+        '==',
+        '{',
+        ':',
+        'while',
+        'if',
+        '<',
+        '-',
+        ',',
+        '%2B'
+    ]];
+    client.process(script, function (result) {
+        console.log(result);
     }, tokenReplacements);
 }
-// testAuthenticate();
-// testCompile();
-testProcess();
+function testKeepOnline() {
+    var client = processor.create(settings);
+    var script = function () {
+        return API.account.setOnline();
+    };
+    client.process(script, function (result) {
+        console.log(JSON.stringify(result));
+    }, [[],[]]);
+}
+//testAuthenticate();
+//testCompile();
+//testNews();
+//testKeepOnline();

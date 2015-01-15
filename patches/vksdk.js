@@ -1,45 +1,43 @@
 var vk = require('vksdk');
 var patch = require('patch');
-patch.replace(vk, '_oauthRequest', function (_method, _arguments, _response, _responseType) {
-    var arguments = (!!_arguments ? _arguments : {});
-    arguments["access_token"] = vk.token;
-    arguments['v'] = vk.options.version || vk.default.version;
-    arguments['lang'] = vk.options.language || vk.default.language;
-    if ("undefined" !== typeof _arguments) {
-        arguments['v'] = _arguments['v'] || arguments['v'];
-        arguments['lang'] = _arguments['lang'] || arguments['lang'];
+var https = require('https');
+patch.replace(vk.prototype, 'requestServerToken', function(userName, password, _response) {
+    var responseType = 'event';
+    if ( typeof(_response) === 'function') {
+        responseType = 'callback';
     }
-    var path = '/method/' + _method + '?' + vk._buildQuery(arguments);
     var options = {
-        host: 'api.vk.com',
+        host: 'oauth.vk.com',
         port: 443,
-        path: path
+        path: '/access_token?client_id=' + this.options.appId + '&client_secret=' + this.options.appSecret +
+        '&v=' + this.options.version + '&grant_type=password&scope=notify,friends,photos,audio,video,docs,messages,notifications,offline,wall&username=' + userName + '&password=' + password
     };
-    https.get(options, function (response) {
+    var self  = this;
+    https.get(options, function(res) {
         var apiResponse = new String();
-        response.setEncoding('utf8');
-        response.on('data', function (chunk) {
+        res.setEncoding('utf8');
+        res.on('data', function(chunk) {
             apiResponse += chunk;
         });
-        response.on('end', function () {
+        res.on('end', function() {
             var result = undefined;
             try {
                 result = JSON.parse(apiResponse);
             } catch (exception) {
+                // TODO: A better way to signal about that exception
                 result = exception;
             }
-            if (_responseType === 'callback' && typeof _response === 'function') {
+            if (responseType === 'callback' && typeof _response === 'function') {
                 _response(result);
             } else {
-                if (!_response) {
-                    vk.emit('done:' + _method, result);
-                } else {
-                    vk.emit(_response, result);
+                if (responseType === 'event' && !!_response) {
+                    return self.emit(_response, result);
                 }
+                return self.emit('serverTokenReady', result);
             }
         });
-    }).on('error', function (error) {
-        vk.emit('http-error', error);
+    }).on('error', function (e) {
+        self.emit('http-error', e);
     });
 });
 module.exports = vk;
