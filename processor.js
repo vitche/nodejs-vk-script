@@ -1,6 +1,7 @@
 var vk = require('./patches/vksdk.js');
 var compiler = require('./compiler.js');
 var compressor = require('./compressor.js');
+exports.vk = vk;
 exports.create = function (settings) {
     return {
         client: function () {
