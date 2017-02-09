@@ -1,5 +1,5 @@
 var vk = require('vksdk');
-var patch = require('patch');
+var patch = require('nodejs-patch');
 var https = require('https');
 patch.replace(vk.prototype, 'requestServerToken', function (userName, password, _response) {
     var responseType = 'event';

@@ -1,21 +1,21 @@
 {
-    "name": "vk-script",
-    "description": "A Node.js package to enable VKScript in SaaS applications",
-    "version": "0.0.1",
-    "main": "./processor.js",
-    "author": {
-        "name": "Vitche Research Team",
-        "email": "developer@vitche.com"
-    },
-    "keywords": [],
-    "licenses": {
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/vitche/nodejs-vk-script.git"
-    },
-    "dependencies": {
-        "nodejs-vksdk": "git+https://github.com/57uff3r/nodejs-vksdk",
-        "patch": "git+https://github.com/vitche/nodejs-patch"
-    }
+  "name": "vk-script",
+  "description": "A Node.js package to enable VKScript in SaaS applications",
+  "version": "0.0.2",
+  "main": "./processor.js",
+  "author": {
+    "name": "Vitche Research Team",
+    "email": "developer@vitche.com"
+  },
+  "keywords": [],
+  "licenses": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vitche/nodejs-vk-script.git"
+  },
+  "dependencies": {
+    "nodejs-vksdk": "git+https://github.com/57uff3r/nodejs-vksdk",
+    "patch": "git+https://github.com/vitche/nodejs-patch"
+  }
 }
